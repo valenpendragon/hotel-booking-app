@@ -6,3 +6,4 @@ class Hotel:
 class ReservationConfirmation:
     def generate(self):
         pass
+
