@@ -3,7 +3,7 @@ df = pd.read_csv("./data/hotels.csv")
 
 
 class Hotel:
-    def __init__(self, id: int):
+    def __init__(self, hotel_id: int):
         pass
 
     def book(self):
@@ -23,8 +23,8 @@ class ReservationConfirmation:
 
 # Creating a skeleton command line main program.
 print(df)
-id = input("Enter the id of the hotel you wish to book: ")
-hotel = Hotel(id)
+hotel_id = input("Enter the id of the hotel you wish to book: ")
+hotel = Hotel(hotel_id)
 if hotel.available():
     hotel.book()
     name = input("Enter your name: ")
