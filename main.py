@@ -1,16 +1,21 @@
 import pandas as pd
-df = pd.read_csv("./data/hotels.csv")
+
+df = pd.read_csv("./data/hotels.csv", dtype={"id": str})
 
 
 class Hotel:
     def __init__(self, hotel_id: int):
-        pass
+        self.hotel_id = hotel_id
 
     def book(self):
-        pass
+        """Books a hotel by changing its availability to no."""
+        df.loc[df["id"] == self.hotel_id, "available"] = "no"
+        df.to_csv("./data/hotels.csv", index=False)
 
     def available(self):
-        pass
+        """Checks if the hotel is available."""
+        availability = df.loc[df["id"] == self.hotel_id, "available"].squeeze()
+        return availability == "yes"
 
 
 class ReservationConfirmation:
@@ -23,8 +28,8 @@ class ReservationConfirmation:
 
 # Creating a skeleton command line main program.
 print(df)
-hotel_id = input("Enter the id of the hotel you wish to book: ")
-hotel = Hotel(hotel_id)
+hotel_ID = input("Enter the id of the hotel you wish to book: ")
+hotel = Hotel(hotel_ID)
 if hotel.available():
     hotel.book()
     name = input("Enter your name: ")
