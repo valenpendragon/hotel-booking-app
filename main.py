@@ -1,6 +1,8 @@
 import pandas as pd
 
 df = pd.read_csv("./data/hotels.csv", dtype={"id": str})
+credit_cards = pd.read_csv("./data/cards.csv", dtype=str).to_dict(
+    orient="records")
 
 
 class Hotel:
@@ -34,15 +36,54 @@ class ReservationConfirmation:
         return content
 
 
+class CreditCard:
+    def __init__(self, number:str,
+                 expiration: str,
+                 holder: str,
+                 cvc: str):
+        self.number = number
+        self.expiration = expiration
+        self.holder = holder.upper()
+        self.cvc = cvc
+        print(self)
+
+    def __str__(self):
+        output = f"""
+            Credit Card Info:
+            Number: {self.number}
+            Expiration: {self.expiration}
+            Holder: {self.holder}
+            CVC: {self.cvc}
+        """
+        return output
+
+    def validate(self):
+        card_data = {"number": self.number,
+                     "expiration": self.expiration,
+                     "holder": self.holder,
+                     "cvc": self.cvc}
+        if card_data in credit_cards:
+            return True
+        else:
+            return False
+
+
 # Creating a skeleton command line main program.
 print(df)
 hotel_ID = input("Enter the id of the hotel you wish to book: ")
 hotel = Hotel(hotel_ID)
 if hotel.available():
-    hotel.book()
-    name = input("Enter your name: ")
-    reservation_ticket = ReservationConfirmation(customer_name=name,
-                                                 hotel_object=hotel)
-    print(reservation_ticket.generate())
+    credit_card = CreditCard(number="1234567890123456",
+                             expiration="12/26",
+                             holder="John Smith",
+                             cvc="123")
+    if credit_card.validate():
+        hotel.book()
+        name = input("Enter your name: ")
+        reservation_ticket = ReservationConfirmation(customer_name=name,
+                                                     hotel_object=hotel)
+        print(reservation_ticket.generate())
+    else:
+        print("There was a problem with your payment method.")
 else:
     print("That hotel is not available right now.")
