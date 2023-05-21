@@ -3,6 +3,7 @@ import pandas as pd
 df = pd.read_csv("./data/hotels.csv", dtype={"id": str})
 credit_cards = pd.read_csv("./data/cards.csv", dtype=str).to_dict(
     orient="records")
+df_card_security = pd.read_csv("./data/card_security.csv", dtype=str)
 
 
 class Hotel:
@@ -68,21 +69,32 @@ class CreditCard:
             return False
 
 
+class SecureCreditCard(CreditCard):
+    def authenticate(self, given_password):
+        password = df_card_security.loc[
+            df_card_security["number"] == self.number, "password"].squeeze()
+        return password == given_password
+
+
 # Creating a skeleton command line main program.
 print(df)
 hotel_ID = input("Enter the id of the hotel you wish to book: ")
 hotel = Hotel(hotel_ID)
 if hotel.available():
-    credit_card = CreditCard(number="1234567890123456",
-                             expiration="12/26",
-                             holder="John Smith",
-                             cvc="123")
+    credit_card = SecureCreditCard(number="1234567890123456",
+                                   expiration="12/26",
+                                   holder="John Smith",
+                                   cvc="123")
     if credit_card.validate():
-        hotel.book()
-        name = input("Enter your name: ")
-        reservation_ticket = ReservationConfirmation(customer_name=name,
-                                                     hotel_object=hotel)
-        print(reservation_ticket.generate())
+        password = input("Please enter your secure credit card password: ")
+        if credit_card.authenticate(given_password=password):
+            hotel.book()
+            name = input("Enter your name: ")
+            reservation_ticket = ReservationConfirmation(customer_name=name,
+                                                         hotel_object=hotel)
+            print(reservation_ticket.generate())
+        else:
+            print("Credit card authentication failed.")
     else:
         print("There was a problem with your payment method.")
 else:
