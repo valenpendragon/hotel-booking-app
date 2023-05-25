@@ -22,6 +22,12 @@ class Hotel:
         return availability == "yes"
 
 
+class SpaHotel(Hotel):
+    def book_spa_package(self):
+        """Books access to the spa at the hotel"""
+        pass
+
+
 class ReservationConfirmation:
     def __init__(self, customer_name: str, hotel_object: Hotel):
         self.customer_name = customer_name
@@ -76,10 +82,24 @@ class SecureCreditCard(CreditCard):
         return password == given_password
 
 
+class SpaReservation:
+    def __init__(self, customer_name: str, hotel_object: SpaHotel):
+        self.customer_name = customer_name
+        self.spa_hotel = hotel_object
+
+    def generate(self):
+        content = f"""
+        Thank you for your SPA reservation!
+        Here is your SPA booking information:
+        Name: {self.customer_name}
+        Hotel Name: {self.spa_hotel.name}"""
+        return content
+
+
 # Creating a skeleton command line main program.
 print(df)
 hotel_ID = input("Enter the id of the hotel you wish to book: ")
-hotel = Hotel(hotel_ID)
+hotel = SpaHotel(hotel_ID)
 if hotel.available():
     credit_card = SecureCreditCard(number="1234567890123456",
                                    expiration="12/26",
@@ -93,6 +113,11 @@ if hotel.available():
             reservation_ticket = ReservationConfirmation(customer_name=name,
                                                          hotel_object=hotel)
             print(reservation_ticket.generate())
+            choice = input("Would you like to book a spa package (Y/N)? ")
+            if choice.lower()[0] == "y":
+                spa_reservation = SpaReservation(customer_name=name,
+                                                 hotel_object=hotel)
+                print(spa_reservation.generate())
         else:
             print("Credit card authentication failed.")
     else:
